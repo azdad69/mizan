@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MIZAN</title>
     <link rel="stylesheet" href="stylle.css" />
+    <script type="module" src="src/main.js"></script>
   </head>
   <body>
     <header>
@@ -15,34 +16,37 @@
       <p>Les prix des métaux précieux</p>
     </header>
     <section>
-      <div class="golld">
+      <div class="gold">
         <div class="content">
           <div class="photo">
             <img src="photos/gold-bars.png" alt="gold" width="200" />
           </div>
           <div class="linfo">
             <h2>or</h2>
-            <p>---</p>
-            <p>USD / once</p>
+            <p id="gold-price">---</p>
+            <p id="gold-currency">USD / once</p>
           </div>
         </div>
         <div class="mise">
-          <p>🕐 Derniere mise a jour : ---</p>
+          <p>
+            🕐 Derniere mise a jour :
+            <span id="gold-updated">---</span>
+          </p>
         </div>
       </div>
-      <div class="golld">
+      <div class="gold">
         <div class="content">
           <div class="photo">
-            <img src="photos/bars.png" alt="argent" />
+            <img src="photos/bars.png" alt="argent" width="200"/>
           </div>
           <div class="linfo">
             <h2>argent</h2>
-            <p>---</p>
-            <p>USD / once</p>
+            <p id="silver-price">---</p>
+            <p id="silver-currency">USD / once</p>
           </div>
         </div>
         <div class="mise">
-          <p>🕐 Derniere mise a jour : ---</p>
+          <p>🕐 Derniere mise a jour : <span id="silver-updated">---</span></p>
         </div>
       </div>
     </section>
@@ -52,11 +56,11 @@
         <h2>Calculateur de prix</h2>
       </div>
       <div class="opt">
-        <select id="nwaa">
+        <select id="metal">
           <option value="gold">Or</option>
           <option value="silver">Argent</option>
         </select>
-        <input type="number" id="quntity" placeholder="Quntité (once)" />
+        <input type="number" id="quantity" placeholder="Quantité (once)" />
         <button id="btn">Calculer</button>
       </div>
     </section>
@@ -69,6 +73,6 @@
     </section>
     <footer>
       <p class="pragraph">MIZAN._.Prix en temps reel</p>
-</footer>
+    </footer>
   </body>
 </html>

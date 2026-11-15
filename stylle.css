@@ -29,7 +29,7 @@ header p {
   font-family: "Courier New", Courier, monospace;
   padding: 20px;
 }
-.golld {
+.gold {
   background-color: rgb(244, 244, 186);
   display: grid;
   border-radius: 20px;
@@ -80,13 +80,13 @@ section {
   justify-content: center;
   gap: 20px;
 }
-#nwaa {
+#metal {
   padding: 12px;
   font-size: large;
   border-radius: 8px;
   font-family: "Courier New", Courier, monospace;
 }
-#quntity {
+#quantity {
   border-radius: 8px;
   padding: 5px;
 }
@@ -119,4 +119,22 @@ footer {
   padding: 20px;
   display:flex;
   justify-content: center;
+}
+#gold-price{
+  font-family: 'Courier New', Courier, monospace;
+}
+#gold-currency{
+  font-family: 'Courier New', Courier, monospace;
+}
+#gold-updated{
+  font-family: 'Courier New', Courier, monospace;
+}
+#silver-price{
+  font-family: 'Courier New', Courier, monospace;
+}
+#silver-currency{
+  font-family: 'Courier New', Courier, monospace;
+}
+#silver-updated{
+  font-family: 'Courier New', Courier, monospace;
 }
