@@ -1,8 +1,27 @@
 
 const url = "https://xaus.com/api/v1/spot";
+
 const container = document.querySelector("#metals-container");
+const selectDevise = document.querySelector("#currency");
+
+// Devise sauvegardée
+const devises = ["MAD", "USD", "EUR"];
+
+const ancienneDevise = localStorage.getItem("devise");
+
+let deviseChoisie = devises.includes(ancienneDevise)
+    ? ancienneDevise
+    : "MAD";
+
+// Données globales
+let metaux = [];
+let dateMaj = "";
+let fxRates = {};
+
+selectDevise.value = deviseChoisie;
 
 
+// US-01 + US-02
 async function getPrices() {
 
     try {
@@ -16,31 +35,37 @@ async function getPrices() {
 
         const data = await response.json();
 
-        const [variationOr, variationArgent] = await Promise.all([
-            getVariation("xau", data.xau.price),
-            getVariation("silver", data.silver_usd_oz)
-        ]);
+        fxRates = data.fx_rates;
 
-        const metaux = [
+        const prixOrUSD = data.spot_usd_oz;
+        const prixArgentUSD = data.silver_usd_oz;
+
+        dateMaj = data.updated_at;
+
+        // Récupérer les variations
+        const [variationOr, variationArgent] =
+            await Promise.all([
+                getVariation("xau", prixOrUSD),
+                getVariation("silver", prixArgentUSD)
+            ]);
+
+        // Tableau des métaux
+        metaux = [
             {
                 nom: "Or",
-                prix: data.xau.price,
-                devise: data.xau.currency,
-                unite: "once troy",
+                prixUSD: prixOrUSD,
                 image: "photos/gold-bars.png",
                 variation: variationOr
             },
             {
                 nom: "Argent",
-                prix: data.silver_usd_oz,
-                devise: "USD",
-                unite: "once troy",
+                prixUSD: prixArgentUSD,
                 image: "photos/bars.png",
                 variation: variationArgent
             }
         ];
 
-        afficherCartes(metaux, data.updated_at);
+        afficherCartes(metaux, dateMaj);
 
     } catch (error) {
         console.error(error);
@@ -49,21 +74,27 @@ async function getPrices() {
 }
 
 
+// US-02 + US-03
 function afficherCartes(metaux, dateMaj) {
 
     container.replaceChildren();
 
+    const taux = fxRates[deviseChoisie];
+
+    if (typeof taux !== "number") {
+        container.textContent = "Taux de change indisponible";
+        return;
+    }
+
     metaux.forEach(function(metal) {
 
-        // Carte principale
         const carte = document.createElement("div");
         carte.classList.add("gold");
 
-        // Content
         const content = document.createElement("div");
         content.classList.add("content");
 
-        // Photo
+        // Image
         const photo = document.createElement("div");
         photo.classList.add("photo");
 
@@ -81,19 +112,24 @@ function afficherCartes(metaux, dateMaj) {
         const titre = document.createElement("h2");
         titre.textContent = metal.nom;
 
+        // Conversion du prix actuel
         const prix = document.createElement("p");
-        prix.textContent = metal.prix;
 
-        const devise = document.createElement("p");
-        devise.textContent = `${metal.devise} / ${metal.unite}`;
+        const prixConverti = metal.prixUSD * taux;
+
+        prix.textContent =
+            `${prixConverti.toFixed(2)} ${deviseChoisie}`;
 
         // Variation
         const variation = document.createElement("p");
 
         if (metal.variation !== null) {
 
-            const valeur = metal.variation.valeur;
-            const pourcentage = metal.variation.pourcentage;
+            const valeur =
+                metal.variation.valeur * taux;
+
+            const pourcentage =
+                metal.variation.pourcentage;
 
             let fleche = "→";
             let couleur = "stable";
@@ -110,7 +146,7 @@ function afficherCartes(metaux, dateMaj) {
             const signePourcentage = pourcentage > 0 ? "+" : "";
 
             variation.textContent =
-                `${fleche} ${signeValeur}${valeur.toFixed(2)} ${metal.devise} (${signePourcentage}${pourcentage.toFixed(2)}%)`;
+                `${fleche} ${signeValeur}${valeur.toFixed(2)} ${deviseChoisie} (${signePourcentage}${pourcentage.toFixed(2)}%)`;
 
             variation.classList.add(couleur);
 
@@ -120,23 +156,20 @@ function afficherCartes(metaux, dateMaj) {
 
         info.appendChild(titre);
         info.appendChild(prix);
-        info.appendChild(devise);
         info.appendChild(variation);
 
         content.appendChild(photo);
         content.appendChild(info);
 
-        // Date de mise à jour
+        // Date
         const mise = document.createElement("div");
         mise.classList.add("mise");
 
         const dateTexte = document.createElement("p");
-        dateTexte.textContent = "🕐 Dernière mise à jour : ";
 
-        const date = document.createElement("span");
-        date.textContent = dateMaj;
+        dateTexte.textContent =
+            `🕐 Dernière mise à jour : ${dateMaj}`;
 
-        dateTexte.appendChild(date);
         mise.appendChild(dateTexte);
 
         // Assemblage
@@ -148,6 +181,7 @@ function afficherCartes(metaux, dateMaj) {
 }
 
 
+// Récupérer l'historique et calculer la variation
 async function getVariation(symbol, prixActuel) {
 
     try {
@@ -187,4 +221,20 @@ async function getVariation(symbol, prixActuel) {
 }
 
 
+// US-03 : Changement de devise
+selectDevise.addEventListener("change", function() {
+
+    deviseChoisie = selectDevise.value;
+
+    // Sauvegarder le choix
+    localStorage.setItem("devise", deviseChoisie);
+
+    // Réafficher les cartes avec la nouvelle devise
+    if (metaux.length > 0) {
+        afficherCartes(metaux, dateMaj);
+    }
+});
+
+
+// Démarrage
 getPrices();
