@@ -138,3 +138,12 @@ footer {
 #silver-updated{
   font-family: 'Courier New', Courier, monospace;
 }
+.hausse {
+    color: green;
+}
+.baisse {
+    color: red;
+}
+.stable {
+    color: gray;
+}
